@@ -91,11 +91,6 @@ Tips for Fixture Loading Tests
     {
         use FixturesTrait;
 
-        public function setUp(): void
-        {
-            parent::setUp();
-        }
-
         public function testIndex()
         {
             // add all your fixtures classes that implement
