@@ -24,38 +24,31 @@ declare(strict_types=1);
 
 namespace Liip\FooBundle\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
 
-class ExampleFunctionalTest extends WebTestCase implements ServiceContainerTestCase
+class ExampleFunctionalTest extends KernelTestCase implements ServiceContainerTestCase
 {
-    use SymfonyTestContainer;
+    use FixturesTrait;
 
     /**
-     * @var \Liip\TestFixturesBundle\Services\DatabaseToolCollection
+     * @var DatabaseToolCollection
      * @inject liip_test_fixtures.services.database_tool_collection
      */
     private $databaseToolCollection;
 
     /**
-     * @var \Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool
+     * @var AbstractDatabaseTool
      */
     protected $databaseTool;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->databaseTool = $this->databaseToolCollection->get();
-    }
 
     /**
      * Example using LiipFunctionalBundle the fixture loader.
      */
     public function testUserFooIndex(): void
     {
-        $this->databaseTool->loadFixtures(['Liip\FooBundle\Tests\Fixtures\LoadUserData']);
+        $this->loadFixtures(['Liip\FooBundle\Tests\Fixtures\LoadUserData']);
 
         $client = $this->createClient();
         $crawler = $client->request('GET', '/users/foo');

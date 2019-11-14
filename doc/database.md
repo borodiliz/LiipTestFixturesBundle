@@ -83,37 +83,24 @@ Tips for Fixture Loading Tests
  4. Load your Doctrine fixtures in your tests:
 
     ```php
+    use Liip\TestFixturesBundle\Test\FixturesTrait;
     use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-    use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
     use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
 
     class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
-        use SymfonyTestContainer;
-
-        /**
-         * @var \Liip\TestFixturesBundle\Services\DatabaseToolCollection
-         * @inject liip_test_fixtures.services.database_tool_collection
-         */
-        private $databaseToolCollection;
-
-        /**
-         * @var \Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool
-         */
-        protected $databaseTool;
+        use FixturesTrait;
 
         public function setUp(): void
         {
             parent::setUp();
-
-            $this->databaseTool = $this->databaseToolCollection->get();
         }
 
         public function testIndex()
         {
             // add all your fixtures classes that implement
             // Doctrine\Common\DataFixtures\FixtureInterface
-            $this->databaseTool->loadFixtures(array(
+            $this->loadFixtures(array(
                 'Bamarni\MainBundle\DataFixtures\ORM\LoadData',
                 'Me\MyBundle\DataFixtures\ORM\LoadData'
             ));
@@ -130,9 +117,7 @@ Tips for Fixture Loading Tests
     `loadFixtures` without any argument.
 
     ```php
-    use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-    use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
-    use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
+    // …
 
     class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
@@ -140,7 +125,7 @@ Tips for Fixture Loading Tests
 
         public function testIndex()
         {
-            $this->databaseTool->loadFixtures();
+            $this->loadFixtures();
 
             // you can now run your functional tests with a populated database
             $client = $this->createClient();
@@ -154,9 +139,7 @@ Tips for Fixture Loading Tests
     to the `setExcludedDoctrineTables` method before loading the fixtures.
 
     ```php
-    use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-    use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
-    use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
+    // …
 
     class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
@@ -165,7 +148,7 @@ Tips for Fixture Loading Tests
         public function testIndex()
         {
             $this->setExcludedDoctrineTables(array('my_tablename_not_to_be_purged'));
-            $this->databaseTool->loadFixtures(array(
+            $this->loadFixtures(array(
                 'Me\MyBundle\DataFixtures\ORM\LoadData'
             ));
             // ...
@@ -177,9 +160,7 @@ Tips for Fixture Loading Tests
  to consider use the second parameter $append with value true.
 
     ```php
-        use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-        use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
-        use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
+    // …
 
         class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
         {
@@ -187,7 +168,7 @@ Tips for Fixture Loading Tests
 
             public function testIndex()
             {
-                $this->databaseTool->loadFixtures(array(
+                $this->loadFixtures(array(
                     'Me\MyBundle\DataFixtures\ORM\LoadAnotherObjectData',
                     true
                 ));
@@ -200,9 +181,7 @@ Tips for Fixture Loading Tests
     specify the service id of the registry manager:
 
     ```php
-    use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-    use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
-    use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
+    // …
 
     class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
@@ -214,7 +193,7 @@ Tips for Fixture Loading Tests
                 'Me\MyBundle\DataFixtures\MongoDB\LoadData'
             );
 
-            $this->databaseTool->loadFixtures($fixtures, false, null, 'doctrine_mongodb');
+            $this->loadFixtures($fixtures, false, null, 'doctrine_mongodb');
 
             $client = $this->createClient();
         }
@@ -230,7 +209,7 @@ rather than the FunctionalTestBundle's load methods.
 You should be aware that there are some difference between the ways these two libraries handle loading.
 
 ```php
-$fixtures = $this->databaseTool->loadAliceFixture(array(
+$fixtures = $this->loadFixtureFiles(array(
     '@AcmeBundle/DataFixtures/ORM/ObjectData.yml',
     '@AcmeBundle/DataFixtures/ORM/AnotherObjectData.yml',
     __DIR__.'/../../DataFixtures/ORM/YetAnotherObjectData.yml',
@@ -243,7 +222,7 @@ If you want to clear tables you have the following two ways:
 
 The first way is consisted in using the second parameter `$append` with value `false`. It allows you **only** to remove all records of table. Values of auto increment won't be reset. 
 ```php
-$fixtures = $this->databaseTool->loadAliceFixture(
+$fixtures = $this->loadFixtureFiles(
     array(
         '@AcmeBundle/DataFixtures/ORM/ObjectData.yml',
         '@AcmeBundle/DataFixtures/ORM/AnotherObjectData.yml',
@@ -265,7 +244,7 @@ $files = array(
      '@AcmeBundle/DataFixtures/ORM/AnotherObjectData.yml',
      __DIR__.'/../../DataFixtures/ORM/YetAnotherObjectData.yml',
  );
-$fixtures = $this->databaseTool->loadAliceFixture($files, false, null, 'doctrine', ORMPurger::PURGE_MODE_TRUNCATE );
+$fixtures = $this->loadFixtureFiles($files, false, null, 'doctrine', ORMPurger::PURGE_MODE_TRUNCATE );
 ```
 
 ### Non-SQLite
@@ -308,7 +287,7 @@ class AccountControllerTest extends WebTestCase
         $fixtures = array(
             'Acme\MyBundle\DataFixtures\ORM\LoadUserData',
         );
-        $this->databaseTool->loadFixtures($fixtures);
+        $this->loadFixtures($fixtures);
     }
 //...
 }
@@ -340,7 +319,7 @@ and then in the test case setup:
 ...
     public function setUp()
     {
-        $this->fixtures = $this->databaseTool->loadFixtures([
+        $this->fixtures = $this->loadFixtures([
             'AppBundle\Tests\Fixtures\LoadMemberAccounts'
         ])->getReferenceRepository();
     ...
