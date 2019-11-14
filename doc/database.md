@@ -134,8 +134,10 @@ Tips for Fixture Loading Tests
     use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
     use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
 
-    class MyControllerTest extends WebTestCase
+    class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
+        // …
+
         public function testIndex()
         {
             $this->databaseTool->loadFixtures();
@@ -156,8 +158,10 @@ Tips for Fixture Loading Tests
     use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
     use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
 
-    class MyControllerTest extends WebTestCase
+    class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
+        // …
+
         public function testIndex()
         {
             $this->setExcludedDoctrineTables(array('my_tablename_not_to_be_purged'));
@@ -177,8 +181,10 @@ Tips for Fixture Loading Tests
         use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
         use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
 
-        class MyControllerTest extends WebTestCase
+        class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
         {
+            // …
+
             public function testIndex()
             {
                 $this->databaseTool->loadFixtures(array(
@@ -198,8 +204,10 @@ Tips for Fixture Loading Tests
     use Zalas\Injector\PHPUnit\Symfony\TestCase\SymfonyTestContainer;
     use Zalas\Injector\PHPUnit\TestCase\ServiceContainerTestCase;
 
-    class MyControllerTest extends WebTestCase
+    class MyControllerTest extends WebTestCase implements ServiceContainerTestCase
     {
+        // …
+
         public function testIndex()
         {
             $fixtures = array(
